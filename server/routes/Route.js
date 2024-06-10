@@ -9,7 +9,10 @@ const storage = multer.diskStorage({
         cb(null, 'uploads/');
     },
     filename: (req, file, cb) => {
-        cb(null, `${Date.now()}-${file.originalname}`);
+        const originalname = file.originalname;
+        const filename = originalname.split('.')[0]; // เอาเฉพาะชื่อไฟล์ 10 ตัวแรก
+        const extension = originalname.split('.')[1];
+        cb(null, `${filename.substring(0, 10)}.${extension}`);
     }
 });
 

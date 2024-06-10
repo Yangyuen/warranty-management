@@ -22,7 +22,9 @@ app.use(bodyParser.json());
 app.use('/api/warrantys', router);
 
 // serve static files
-app.use('/uploads', express.static('uploads'));
+app.use('/pr-files', express.static('pr-files'));
+app.use('/po-files', express.static('po-files'));
+
 
 // server listen
 app.listen(port, () => {

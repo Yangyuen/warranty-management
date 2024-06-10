@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useStore } from '../context/StoreContext';
+import { useNavigate } from 'react-router-dom';
 
 
-const ListWarranty = () => {
+
+const ListWarranty = ({ onEdit }) => {
     const { listWarranty, deleteWarranty, searchWarranty, url } = useStore();
     const [warranties, setWarranties] = useState([]);
     const [showPrFile, setShowPrFile] = useState(false);
     const [showPoFile, setShowPoFile] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const navigate = useNavigate();
 
     const handlePrClick = (url) => {
         setShowPrFile(showPrFile === url ? '' : url);
@@ -45,13 +48,16 @@ const ListWarranty = () => {
     const handleSearch = async () =>{
         try {
             const data = await searchWarranty(searchQuery);
-            setWarranties(data);
+            setWarranties(data || []);
         } catch (error) {
             console.error('Error searching warranty:',error);
+            setWarranties([]);
         }
     }
-
-
+    const handleEdit = (warranty) => {
+        onEdit(warranty);
+        navigate('/add-warranty');
+    }
     return (
         <div className="max-w-4xl mx-auto mt-10 p-4">
             <h1 className="text-3xl font-bold mb-6 text-center">Warranty List</h1>
@@ -98,7 +104,7 @@ const ListWarranty = () => {
                             <td className="py-2 px-4 border-b">{new Date(item.expireDate).toLocaleDateString()}</td>
                             <td className="py-2 px-4 border-b">
                                 <button onClick={() => handleDelete(item._id)} className="text-red-600">Delete</button>
-                                <button onClick={() => alert('Edit functionality not implemented')} className="text-yellow-600 ml-2">Edit</button>
+                                <button onClick={() => handleEdit(item)} className="text-yellow-600 ml-2">Edit</button>
                             </td>
                         </tr>
                     ))}

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useStore } from '../context/StoreContext';
+import { useNavigate } from 'react-router-dom';
 
-const AddWarranty = ({ warrantyToEdit, onAddWarranty }) => {
+const AddWarranty = ({ warrantyToEdit }) => {
     const { addWarranty, updateWarranty } = useStore();
+    const navigate = useNavigate();
     const [productName, setProductName] = useState('');
     const [vendor, setVendor] = useState('');
     const [price, setPrice] = useState('');
@@ -21,13 +23,13 @@ const AddWarranty = ({ warrantyToEdit, onAddWarranty }) => {
             setPo(warrantyToEdit.po)
             setPrFile(warrantyToEdit.prFile)
             setPoFile(warrantyToEdit.poFile)
-            setExpireDate(new Date(warrantyToEdit.expireDate).toISOString().split('T'[0]));
+            setExpireDate(new Date(warrantyToEdit.expireDate).toISOString().split('T')[0]);
          }
     }, [warrantyToEdit]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!productName || !vendor || !price ||!pr ||!po || !prFile || !poFile || !expireDate) {
+        if (!productName || !vendor || !price || !pr || !po || !prFile || !poFile || !expireDate) {
             alert("Please fill out all fields.");
             return;
         }
@@ -38,17 +40,20 @@ const AddWarranty = ({ warrantyToEdit, onAddWarranty }) => {
         formData.append('price', price);
         formData.append('pr', pr);
         formData.append('po', po);
-        formData.append('prFile', prFile);
-        formData.append('poFile', poFile);
+        if (prFile) {
+            formData.append('prFile', prFile);
+        }
+        if (poFile) {
+            formData.append('poFile', poFile);
+        }
         formData.append('expireDate', expireDate);
 
         try {
-            if (warrantyToEdit){
+            if (warrantyToEdit) {
                 await updateWarranty(warrantyToEdit._id, formData);
-                alert('Warrantjy updated successfully!');
+                alert('Warranty updated successfully!')
             } else {
-                const newWarranty = await addWarranty(formData);
-                onAddWarranty(newWarranty);
+                await addWarranty(formData);
                 alert('Warranty added successfully!');
             }
             setProductName('');
@@ -59,16 +64,18 @@ const AddWarranty = ({ warrantyToEdit, onAddWarranty }) => {
             setPrFile(null);
             setPoFile(null);
             setExpireDate('');
-            alert("Warranty added successfully!");
+
+            navigate('/');
         } catch (error) {
-            console.error('Error adding warranty:', error);
-            alert("Failed to add warranty. Please try again.");
+            console.error('Error adding/updating warranty:', error);
+            alert("Failed to add/update warranty. Please try again.");
         }
     };
 
+
     return (
         <div className="max-w-md mx-auto mt-10 p-4 border rounded shadow">
-            <h1 className="text-2xl font-bold mb-4 text-center">Add Warranty</h1>
+            <h1 className="text-2xl font-bold mb-4 text-center">{warrantyToEdit ? 'Edit Warranty' : 'Add Warranty'}</h1>
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                     <label className="block mb-2">Product Name</label>

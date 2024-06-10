@@ -17,7 +17,7 @@ const upload = multer({ storage: storage });
 
 router.post('/add', upload.fields([{ name: 'prFile' }, { name: 'poFile' }]), addWarranty);
 router.get('/list', listWarranty)
-router.post('/:id', upload.fields([{ name: 'prFile' }, { name: 'poFile' }]), updateWarranty);
+router.put('/:id', upload.fields([{ name: 'prFile' }, { name: 'poFile' }]), updateWarranty);
 router.delete('/:id',deleteWarranty)
 router.get('/search',searchWarranty)
 

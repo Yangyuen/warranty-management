@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 const ListWarranty = ({ onEdit }) => {
-    const { listWarranty, deleteWarranty, searchWarranty, url } = useStore();
+    const { listWarranty, deleteWarranty, searchWarranty, url, calculateRemainingDays } = useStore();
     const [warranties, setWarranties] = useState([]);
     const [showPrFile, setShowPrFile] = useState(false);
     const [showPoFile, setShowPoFile] = useState(false);
@@ -59,58 +59,74 @@ const ListWarranty = ({ onEdit }) => {
         navigate('/add-warranty');
     }
     return (
-        <div className="max-w-4xl mx-auto mt-10 p-4">
-            <h1 className="text-3xl font-bold mb-6 text-center">Warranty List</h1>
+        <div className=" max-w-full mx-auto mt-10 p-4 bg-gray-50 rounded-lg shadow-md">
+            <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Warranty List</h1>
             <div className='mb-4'>
                 <input
                     type='text'
                     value={searchQuery}
-                    onChange={(e)=>setSearchQuery(e.target.value)}
+                    onChange={(e) => {
+                        setSearchQuery(e.target.value)
+                        handleSearch(e.target.value)
+                    }}
                     placeholder='Search warranties...'
-                    className='w-full p-2 border rounded'
+                    className='w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
                 />
-                <button onClick={handleSearch} className='w-full p-2 bg-blue-600 text-white rounded mt-2'>Search</button>
+                <button onClick={handleSearch} className='w-full p-2 bg-blue-600 text-white rounded-lg mt-2 hover:bg-blue-700 transition duration-300'>Search</button>
             </div>
-            <table className="min-w-full bg-white border border-gray-200">
+            <table className="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
                 <thead>
-                    <tr>
-                        <th className="py-2 px-4 border-b">Product Name</th>
-                        <th className="py-2 px-4 border-b">Vendor</th>
-                        <th className="py-2 px-4 border-b">Price</th>
-                        <th className="py-2 px-4 border-b">PR</th>
-                        <th className="py-2 px-4 border-b">PO</th>
-                        <th className="py-2 px-4 border-b">Expire Date</th>
-                        <th className="py-2 px-4 border-b">Actions</th>
+                    <tr className="bg-gray-200">
+                        <th className="py-3 px-4 border-b text-center text-gray-700">Product Name</th>
+                        <th className="py-3 px-4 border-b text-center text-gray-700">Vendor</th>
+                        <th className="py-3 px-4 border-b text-center text-gray-700">Price</th>
+                        <th className="py-3 px-4 border-b text-center text-gray-700">PR</th>
+                        <th className="py-3 px-4 border-b text-center text-gray-700">PO</th>
+                        <th className="py-3 px-4 border-b text-center text-gray-700">Expire Date</th>
+                        <th className="py-3 px-4 border-b text-center text-gray-700">Remaining Days</th>
+                        <th className="py-3 px-4 border-b text-center text-gray-700">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {warranties.map((item, index) => (
-                        <tr key={index} className="text-center">
-                            <td className="py-2 px-4 border-b">{item.productName}</td>
-                            <td className="py-2 px-4 border-b">{item.vendor}</td>
-                            <td className="py-2 px-4 border-b">{item.price}</td>
-                            <td className="py-2 px-4 border-b" onClick={() => handlePrClick(item.prFile)}>
-                            {item.pr}
+                        <tr key={index} className="text-center even:bg-gray-50">
+                            <td className="py-3 px-4 border-b text-left">{item.productName}</td>
+                            <td className="py-3 px-4 border-b">{item.vendor}</td>
+                            <td className="py-3 px-4 border-b">{item.price}</td>
+                            <td className="py-3 px-4 border-b" onClick={() => handlePrClick(item.prFile)}>
+                                {item.pr}
                                 {showPrFile === item.prFile && (
                                     <a href={`${url}/${item.prFile}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 ml-2">View PR</a>
                                 )}
                             </td>
-                            <td className="py-2 px-4 border-b" onClick={() => handlePoClick(item.poFile)}>
-                            {item.po}
+                            <td className="py-3 px-4 border-b" onClick={() => handlePoClick(item.poFile)}>
+                                {item.po}
                                 {showPoFile === item.poFile && (
                                     <a href={`${url}/${item.poFile}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 ml-2">View PO</a>
                                 )}
                             </td>
-                            <td className="py-2 px-4 border-b">{new Date(item.expireDate).toLocaleDateString()}</td>
-                            <td className="py-2 px-4 border-b">
-                                <button onClick={() => handleDelete(item._id)} className="text-red-600">Delete</button>
-                                <button onClick={() => handleEdit(item)} className="text-yellow-600 ml-2">Edit</button>
+                            <td className="py-3 px-4 border-b">{new Date(item.expireDate).toLocaleDateString()}</td>
+                            <td className="py-3 px-4 text-gray-500 border-b">{calculateRemainingDays(item.expireDate)} Days</td>
+                            <td className="py-3 px-4 border-b flex justify-center space-x-2">
+                                <button 
+                                    onClick={() => handleDelete(item._id)} 
+                                    className="text-white bg-red-600 hover:bg-red-700 font-semibold py-2 px-4 w-24 rounded-lg transition duration-300"
+                                >
+                                    Delete
+                                </button>
+                                <button 
+                                    onClick={() => handleEdit(item)} 
+                                    className="text-white bg-yellow-600 hover:bg-yellow-700 font-semibold py-2 px-4 w-24 rounded-lg transition duration-300"
+                                >
+                                    Edit
+                                </button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
         </div>
+
     );
 };
 

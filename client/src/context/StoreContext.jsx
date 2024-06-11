@@ -4,6 +4,14 @@ import React, { createContext, useContext } from "react";
 const ApiContext = createContext();
 const url = 'http://localhost:5000'; // ใช้ http แทน https
 
+const calculateRemainingDays = (expireDate) => {
+  const today = new Date();
+  const expiry = new Date(expireDate);
+  const diffTime = Math.abs(expiry - today);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays;
+};
+
 export const StoreContextProvider = ({ children }) => {
   
   // List Warranty
@@ -71,7 +79,7 @@ export const StoreContextProvider = ({ children }) => {
 
 
   return (
-    <ApiContext.Provider value={{ addWarranty, listWarranty,deleteWarranty,updateWarranty,searchWarranty, url }}>
+    <ApiContext.Provider value={{ addWarranty, listWarranty,deleteWarranty,updateWarranty,searchWarranty, url, calculateRemainingDays }}>
       {children}
     </ApiContext.Provider>
   );

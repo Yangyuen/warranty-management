@@ -14,22 +14,20 @@ const AddWarranty = ({ warrantyToEdit }) => {
     const [poFile, setPoFile] = useState(null);
     const [expireDate, setExpireDate] = useState('');
 
-    useEffect(()=>{
+    useEffect(() => {
         if (warrantyToEdit) {
-            setProductName(warrantyToEdit.productName)
-            setVendor(warrantyToEdit.vendor)
-            setPrice(warrantyToEdit.price)
-            setPr(warrantyToEdit.pr)
-            setPo(warrantyToEdit.po)
-            setPrFile(warrantyToEdit.prFile)
-            setPoFile(warrantyToEdit.poFile)
+            setProductName(warrantyToEdit.productName);
+            setVendor(warrantyToEdit.vendor);
+            setPrice(warrantyToEdit.price);
+            setPr(warrantyToEdit.pr);
+            setPo(warrantyToEdit.po);
             setExpireDate(new Date(warrantyToEdit.expireDate).toISOString().split('T')[0]);
-         }
+        }
     }, [warrantyToEdit]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!productName || !vendor || !price || !pr || !po || !prFile || !poFile || !expireDate) {
+        if (!productName || !vendor || !price || !pr || !po || !expireDate) {
             alert("Please fill out all fields.");
             return;
         }
@@ -40,13 +38,19 @@ const AddWarranty = ({ warrantyToEdit }) => {
         formData.append('price', price);
         formData.append('pr', pr);
         formData.append('po', po);
+        formData.append('expireDate', expireDate);
+
         if (prFile) {
             formData.append('prFile', prFile);
+        } else if (warrantyToEdit && warrantyToEdit.prFile) {
+            formData.append('prFile', warrantyToEdit.prFile);
         }
+
         if (poFile) {
             formData.append('poFile', poFile);
+        } else if (warrantyToEdit && warrantyToEdit.poFile) {
+            formData.append('poFile', warrantyToEdit.poFile);
         }
-        formData.append('expireDate', expireDate);
 
         try {
             if (warrantyToEdit) {
@@ -71,7 +75,6 @@ const AddWarranty = ({ warrantyToEdit }) => {
             alert("Failed to add/update warranty. Please try again.");
         }
     };
-
 
     return (
         <div className="max-w-md mx-auto mt-10 p-4 border rounded shadow">
@@ -120,8 +123,11 @@ const AddWarranty = ({ warrantyToEdit }) => {
                         type="file"
                         onChange={(e) => setPrFile(e.target.files[0])}
                         className="w-full p-2 border rounded"
-                        required
+                        required={!warrantyToEdit || !warrantyToEdit.prFile}
                     />
+                    {warrantyToEdit && warrantyToEdit.prFile && !prFile && (
+                        <p>Previous PR File: {warrantyToEdit.prFile}</p>
+                    )}
                 </div>
                 <div>
                     <label className="block mb-2">PO</label>
@@ -136,8 +142,11 @@ const AddWarranty = ({ warrantyToEdit }) => {
                         type="file"
                         onChange={(e) => setPoFile(e.target.files[0])}
                         className="w-full p-2 border rounded"
-                        required
+                        required={!warrantyToEdit || !warrantyToEdit.poFile}
                     />
+                    {warrantyToEdit && warrantyToEdit.poFile && !poFile && (
+                        <p>Previous PO File: {warrantyToEdit.poFile}</p>
+                    )}
                 </div>
                 <div>
                     <label className="block mb-2">Expire Date</label>

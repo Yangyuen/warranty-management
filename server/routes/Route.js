@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
     },
     filename: (req, file, cb) => {
         const originalname = file.originalname;
-        const filename = originalname.split('.')[0]; // Get the first 10 characters of the file name
+        const filename = Buffer.from(originalname, 'latin1').toString('utf8').split('.')[0]; // Get the first 10 characters of the file name
         const extension = originalname.split('.').pop();
         cb(null, `${filename.substring(0, 10)}.${extension}`);
     }

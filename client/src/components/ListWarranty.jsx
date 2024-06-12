@@ -130,7 +130,9 @@ const ListWarranty = ({ onEdit }) => {
                             </td>
                             <td className="py-3 px-4 border-b">{new Date(item.expireDate).toLocaleDateString()}</td>
                             <td className={`py-3 px-4 border-b 
-                                ${calculateRemainingDays(item.expireDate) < 90 ? 'text-red-500' : 'text-gray-500'}`}>{calculateRemainingDays(item.expireDate)} <span></span></td>
+                                ${calculateRemainingDays(item.expireDate) < 90 ? 'text-red-500' : 'text-gray-500'}`}>
+                                    {typeof calculateRemainingDays(item.expireDate) === 'number' ? `${calculateRemainingDays(item.expireDate)} Day` : calculateRemainingDays(item.expireDate)}
+                            </td>
                             <td className="py-3 px-4 border-b flex justify-center space-x-2">
                                 <button 
                                     onClick={() => handleDelete(item._id)} 

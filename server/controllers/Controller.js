@@ -1,4 +1,13 @@
 import warrantyModel from '../model/warrantyModel.js'
+import fs from 'fs';
+import xlsx from 'xlsx';
+
+
+const excelDateToJSDate = (excelDate) => {
+    const jsDate = new Date((excelDate - (25567 + 2)) * 86400 * 1000);
+    return jsDate;
+};
+
 
 export const addWarranty = async (req, res) => {
     try {
@@ -27,6 +36,42 @@ export const addWarranty = async (req, res) => {
     } catch (error) {
         console.error('Error adding warranty:', error);
         res.status(500).json({ message: 'Failed to add warranty.', error: error.message });
+    }
+};
+
+// Import Data
+export const importWarranty = async (req, res) => {
+    try {
+        const filePath = req.file.path;
+        const workbook = xlsx.readFile(filePath);
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        const data = xlsx.utils.sheet_to_json(sheet);
+
+        for (const item of data) {
+            const { productName, vendor, price, pr, po, expireDate } = item;
+            if (!productName || !vendor || !price || !pr || !po || !expireDate) {
+                console.error('Missing required fields in:', item);
+                continue;
+            }
+            const warranty = new warrantyModel({
+                productName,
+                vendor,
+                price,
+                pr,
+                po,
+                prFile: '',
+                poFile: '',
+                expireDate: excelDateToJSDate(expireDate),
+            });
+            await warranty.save();
+        }
+
+        fs.unlinkSync(filePath); // ลบไฟล์หลังจากนำเข้าข้อมูลเสร็จสิ้น
+        res.status(201).json({ message: 'Warranties imported successfully!' });
+    } catch (error) {
+        console.error('Error importing warranties:', error);
+        res.status(500).json({ message: 'Failed to import warranties.', error: error.message });
     }
 };
 
@@ -79,18 +124,27 @@ export const deleteWarranty = async (req,res)=>{
 }
 
 // Search Warranty
-export const searchWarranty = async (req,res)=>{
+export const searchWarranty = async (req, res) => {
     try {
+        let warranties;
         const query = req.query.query;
-        const warranties = await warrantyModel.find({
-            $or: [
-                { productName: new RegExp(query,'i')},
-                { vendor: new RegExp(query,'i')},
-            ],
-        });
+
+        if (!query) {
+            // ถ้าคำค้นหาเป็นค่าว่าง ให้แสดงข้อมูลทั้งหมด
+            warranties = await warrantyModel.find();
+        } else {
+            // ค้นหาข้อมูลในฐานข้อมูลตามคำค้นหาที่กำหนด
+            warranties = await warrantyModel.find({
+                $or: [
+                    { productName: new RegExp(query, 'i') },
+                    { vendor: new RegExp(query, 'i') },
+                ],
+            });
+        }
+
         res.json(warranties);
     } catch (error) {
-        console.error('Error searching warranties:',error);
-        res.status(500).json({message: 'Failed to search warranties.', error: error.message})
+        console.error('Error searching warranties:', error);
+        res.status(500).json({ message: 'Failed to search warranties.', error: error.message });
     }
 }

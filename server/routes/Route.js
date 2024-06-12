@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { addWarranty, deleteWarranty, listWarranty, searchWarranty, updateWarranty } from '../controllers/Controller.js';
+import { addWarranty, deleteWarranty, importWarranty, listWarranty, searchWarranty, updateWarranty } from '../controllers/Controller.js';
 
 const router = express.Router();
 
@@ -11,6 +11,8 @@ const storage = multer.diskStorage({
             cb(null, 'pr-files/');
         } else if (file.fieldname === 'poFile') {
             cb(null, 'po-files/');
+        } else if (file.fieldname === 'file') {
+            cb(null, 'uploads/');
         } else {
             cb(new Error('Invalid field name'), null);
         }
@@ -30,6 +32,9 @@ router.post('/add', upload.fields([
     { name: 'prFile'},
     { name: 'poFile'}
 ]), addWarranty);
+
+// Add route for importing Excel data
+router.post('/import', upload.single('file'), importWarranty)
 
 router.get('/list', listWarranty);
 

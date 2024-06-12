@@ -6,8 +6,8 @@ const warrantySchema = new mongoose.Schema({
   price: { type: Number, required: true },
   pr: { type: String, required: true },
   po: { type: String, required: true },
-  prFile: { type: String, required: true },
-  poFile: { type: String, required: true },
+  prFile: { type: String, default:'' },
+  poFile: { type: String, default:'' },
   expireDate: { type: Date, required: true },
 });
 

@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useStore } from '../context/StoreContext';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const AddWarranty = ({ warrantyToEdit }) => {
     const { addWarranty, updateWarranty } = useStore();
@@ -55,10 +58,10 @@ const AddWarranty = ({ warrantyToEdit }) => {
         try {
             if (warrantyToEdit) {
                 await updateWarranty(warrantyToEdit._id, formData);
-                alert('Warranty updated successfully!')
+                toast.success('Warranty updated successfully!')
             } else {
                 await addWarranty(formData);
-                alert('Warranty added successfully!');
+                toast.success('Warranty added successfully!');
             }
             setProductName('');
             setVendor('');
@@ -71,13 +74,23 @@ const AddWarranty = ({ warrantyToEdit }) => {
 
             navigate('/');
         } catch (error) {
-            console.error('Error adding/updating warranty:', error);
+            toast.error('Error adding/updating warranty:', error);
             alert("Failed to add/update warranty. Please try again.");
         }
     };
 
+    const handleImport =()=>{
+        navigate('/import-warranty')
+    }
+
     return (
-        <div className="max-w-md mx-auto mt-10 p-4 border rounded shadow">
+        <div className="max-w-md mx-auto mt-10 p-4 border rounded shadow ">
+            <button 
+            type="button"
+            className='  float-right p-2 mb-10 bg-blue-600 hover:bg-blue-700 text-white rounded'
+            onClick={handleImport}>
+             Import Data
+            </button>
             <h1 className="text-2xl font-bold mb-4 text-center">{warrantyToEdit ? 'Edit Warranty' : 'Add Warranty'}</h1>
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
@@ -160,10 +173,11 @@ const AddWarranty = ({ warrantyToEdit }) => {
                 </div>
                 <button 
                     type="submit" 
-                    className="w-full p-2 bg-blue-600 text-white rounded">
+                    className="w-full p-2 bg-blue-600 hover:bg-blue-700 text-white rounded">
                     {warrantyToEdit ? 'Update' : 'Submit'}
                 </button>
             </form>
+            
         </div>
     );
 };

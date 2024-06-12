@@ -76,10 +76,23 @@ export const StoreContextProvider = ({ children }) => {
     }
   }
 
-
+  // importWarranty
+  const importWarranty = async (formData) => {
+    try {
+      const response = await axios.post(`${url}/api/warrantys/import`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error importing warranties:", error.response || error.message);
+      throw error;
+    }
+  };
 
   return (
-    <ApiContext.Provider value={{ addWarranty, listWarranty,deleteWarranty,updateWarranty,searchWarranty, url, calculateRemainingDays }}>
+    <ApiContext.Provider value={{ addWarranty, listWarranty,deleteWarranty,updateWarranty,searchWarranty, url, calculateRemainingDays, importWarranty }}>
       {children}
     </ApiContext.Provider>
   );

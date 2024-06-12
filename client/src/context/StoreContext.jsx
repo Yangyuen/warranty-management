@@ -7,10 +7,16 @@ const url = 'http://localhost:5000'; // ใช้ http แทน https
 const calculateRemainingDays = (expireDate) => {
   const today = new Date();
   const expiry = new Date(expireDate);
-  const diffTime = Math.abs(expiry - today);
+  const diffTime = expiry - today;
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays;
+  
+  if (diffDays <= 0) {
+      return <span className="text-red-500 text">Warranty expired {Math.abs(diffDays)} days ago.</span>;
+  } else {
+      return diffDays;
+  }
 };
+
 
 export const StoreContextProvider = ({ children }) => {
   

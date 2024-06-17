@@ -116,13 +116,13 @@ const ListWarranty = ({ onEdit }) => {
                             <td className="py-3 px-4 border-b text-left">{item.productName}</td>
                             <td className="py-3 px-4 border-b">{item.vendor}</td>
                             <td className="py-3 px-4 border-b">{item.price.toLocaleString()}</td>
-                            <td className="py-3 px-4 border-b" onClick={() => handlePrClick(item.prFile)}>
+                            <td className="py-3 px-4 border-b cursor-pointer hover:text-blue-500 transition duration-3000" onClick={() => handlePrClick(item.prFile)}>
                                 {item.pr}
                                 {showPrFile === item.prFile && (
                                     <a href={`${url}/${item.prFile}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 ml-2">View PR</a>
                                 )}
                             </td>
-                            <td className="py-3 px-4 border-b" onClick={() => handlePoClick(item.poFile)}>
+                            <td className="py-3 px-4 border-b cursor-pointer hover:text-blue-500 translate-x-2 duration-3000" onClick={() => handlePoClick(item.poFile)}>
                                 {item.po}
                                 {showPoFile === item.poFile && (
                                     <a href={`${url}/${item.poFile}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 ml-2">View PO</a>

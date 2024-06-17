@@ -74,6 +74,39 @@ export const importWarranty = async (req, res) => {
         res.status(500).json({ message: 'Failed to import warranties.', error: error.message });
     }
 };
+    
+    // Export Warranty
+    export const exportWarranty = async (req, res) => {
+        try {
+            const warranties = await warrantyModel.find();
+    
+            // สร้างข้อมูลที่จะเขียนลงใน Excel
+            const data = warranties.map(warranty => ({
+                productName: warranty.productName,
+                vendor: warranty.vendor,
+                price: warranty.price.toLocaleString(),
+                pr: warranty.pr,
+                prFile: warranty.prFile,
+                po: warranty.po,
+                poFile: warranty.prFile,
+                expireDate: warranty.expireDate.toISOString().split('T')[0], // แปลงเป็นวันที่ ISO แบบตัดเวลาออก
+            }));
+    
+            // สร้าง Workbook และ Worksheet
+            const ws = xlsx.utils.json_to_sheet(data);
+            const wb = xlsx.utils.book_new();
+            xlsx.utils.book_append_sheet(wb, ws, 'Warranties');
+    
+            // ส่งไฟล์ Excel กลับให้กับผู้ใช้
+            const excelBuffer = xlsx.write(wb, { type: 'buffer', bookType: 'xlsx' });
+            res.set('Content-Disposition', 'attachment; filename=warranties.xlsx');
+            res.send(Buffer.from(excelBuffer));
+        } catch (error) {
+            console.error('Error exporting warranties:', error);
+            res.status(500).json({ message: 'Failed to export warranties.', error: error.message });
+        }
+    };
+
 
 
 // List Warranty
@@ -148,3 +181,4 @@ export const searchWarranty = async (req, res) => {
         res.status(500).json({ message: 'Failed to search warranties.', error: error.message });
     }
 }
+

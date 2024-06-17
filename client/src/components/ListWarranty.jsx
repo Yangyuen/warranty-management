@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 const ListWarranty = ({ onEdit }) => {
-    const { listWarranty, deleteWarranty, searchWarranty, url, calculateRemainingDays } = useStore();
+    const { listWarranty, deleteWarranty, searchWarranty, url, calculateRemainingDays,exportWarranty } = useStore();
     const [warranties, setWarranties] = useState([]);
     const [showPrFile, setShowPrFile] = useState(false);
     const [showPoFile, setShowPoFile] = useState(false);
@@ -58,6 +58,15 @@ const ListWarranty = ({ onEdit }) => {
         return calculateRemainingDays(a.expireDate) - calculateRemainingDays(b.expireDate);
     });
 
+    // export excel
+    const handleExport = async () => {
+        try {
+            await exportWarranty();
+        } catch (error) {
+            alert('Failed to export warranties. Please try again.');
+        }
+    };
+
 
     // Search
     useEffect(() => {
@@ -96,6 +105,9 @@ const ListWarranty = ({ onEdit }) => {
                     className='w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
                 />
                 {/* <button onClick={handleSearch} className='w-full p-2 bg-blue-600 text-white rounded-lg mt-2 hover:bg-blue-700 transition duration-300'>Search</button> */}
+            </div>
+            <div>
+                <button onClick={handleExport} className='w-full p-2 bg-green-600 text-white rounded mt-2 '>Export</button>
             </div>
             <table className="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
                 <thead>

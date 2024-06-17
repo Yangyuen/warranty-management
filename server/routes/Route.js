@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { addWarranty, deleteWarranty, importWarranty, listWarranty, searchWarranty, updateWarranty } from '../controllers/Controller.js';
+import { addWarranty, deleteWarranty, exportWarranty, importWarranty, listWarranty, searchWarranty, updateWarranty } from '../controllers/Controller.js';
 
 const router = express.Router();
 
@@ -44,7 +44,7 @@ router.put('/:id', upload.fields([
 ]), updateWarranty);
 
 router.delete('/:id', deleteWarranty);
-
 router.get('/search', searchWarranty);
+router.get('/export', exportWarranty)
 
 export default router;

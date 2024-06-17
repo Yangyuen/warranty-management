@@ -97,8 +97,26 @@ export const StoreContextProvider = ({ children }) => {
     }
   };
 
+ // Export Warranty
+ const exportWarranty = async () => {
+  try {
+    const response = await axios.get(`${url}/api/warrantys/export`, {
+      responseType: 'blob', // important for file download
+    });
+    const blob = new Blob([response.data], { type: response.headers['content-type'] });
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.download = 'warranties.xlsx';
+    link.click();
+  } catch (error) {
+    console.error("Error exporting warranties:", error);
+    throw error;
+  }
+};
+
+
   return (
-    <ApiContext.Provider value={{ addWarranty, listWarranty,deleteWarranty,updateWarranty,searchWarranty, url, calculateRemainingDays, importWarranty }}>
+    <ApiContext.Provider value={{ addWarranty, listWarranty,deleteWarranty,updateWarranty,searchWarranty, url, calculateRemainingDays, importWarranty, exportWarranty }}>
       {children}
     </ApiContext.Provider>
   );
